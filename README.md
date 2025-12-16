@@ -6,8 +6,11 @@ Basic C and C++ devcontainer with cmake, compiler warnings, clang-tidy and clang
 
 ## Installed tools
 
+* ccache
 * clang
 * clang-tidy
 * clang-format
 * cmake
+* cppcheck
 * lldb
+* vcpkg
