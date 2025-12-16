@@ -37,6 +37,8 @@ jobs:
     needs: build-devcontainer-image
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Convert GHCR url to lower case
         run: echo "GHCR_URL=${GHCR_URL_WITH_UPPERCASE@L}" >> ${GITHUB_ENV}
       - name: Login to Github Container Registry
