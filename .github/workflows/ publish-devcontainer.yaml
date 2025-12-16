@@ -19,6 +19,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          file: ./.devcontainer/Dockerfile
+          context: .devcontainer
           push: true
           tags: dhglennvl/cpp-devcontainer:latest
