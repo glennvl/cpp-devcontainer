@@ -1,0 +1,82 @@
+name: Sanity Checks
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+  GHCR_URL_WITH_UPPERCASE: ghcr.io/${{ github.repository }}
+jobs:
+  build-devcontainer-image:
+    name: Build devcontainer
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Convert GHCR url to lower case
+        run: echo "GHCR_URL=${GHCR_URL_WITH_UPPERCASE@L}" >> ${GITHUB_ENV}
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pre-build dev container image
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ${{ env.GHCR_URL }}
+          cacheFrom: ${{ env.GHCR_URL }}
+          push: always
+  check-tools-installed:
+    name: Check if all tools are installed
+    needs: build-devcontainer-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Convert GHCR url to lower case
+        run: echo "GHCR_URL=${GHCR_URL_WITH_UPPERCASE@L}" >> ${GITHUB_ENV}
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check tools
+        uses: devcontainers/ci@v0.3
+        with:
+          cacheFrom: ${{ env.GHCR_URL }}
+          push: never
+          runCmd: |
+            clang --version
+            cmake --version
+            cppcheck --version
+            vcpkg --version
+  build-test-project:
+    name: Build test project
+    needs: build-devcontainer-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Convert GHCR url to lower case
+        run: echo "GHCR_URL=${GHCR_URL_WITH_UPPERCASE@L}" >> ${GITHUB_ENV}
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build test project
+        uses: devcontainers/ci@v0.3
+        with:
+          cacheFrom: ${{ env.GHCR_URL }}
+          push: never
+          runCmd: |
+            cd test
+            cmake --preset clang-debug
+            cmake --build --preset clang-debug-build
+            ./build/clang-debug/hello_world
