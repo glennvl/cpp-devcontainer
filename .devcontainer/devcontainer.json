@@ -1,12 +1,7 @@
 {
     "name": "C++ Devcontainer",
     "build": {
-        "dockerfile": "Dockerfile",
-        "args": {
-            "CLANG_VERSION": "21",
-            "CMAKE_VERSION": "4.2.1",
-            "CPPCHECK_VERSION": "2.18.0"
-        }
+        "dockerfile": "Dockerfile"
     },
     "remoteUser": "user"
 }
