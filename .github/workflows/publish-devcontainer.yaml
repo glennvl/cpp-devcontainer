@@ -18,9 +18,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       - name: Install docker buildx
         uses: docker/setup-buildx-action@v3
+      - name: Extract repository name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> ${GITHUB_ENV}
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .devcontainer
           push: true
-          tags: dhglennvl/cpp-devcontainer:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest
