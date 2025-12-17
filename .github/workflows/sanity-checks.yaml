@@ -53,9 +53,14 @@ jobs:
           cacheFrom: ${{ env.GHCR_URL }}
           push: never
           runCmd: |
+            ccache --version
             clang --version
+            clang-format --version
+            clang-tidy --version
+            clangd --version
             cmake --version
             cppcheck --version
+            lldb --version
             vcpkg --version
   build-test-project:
     name: Build test project
